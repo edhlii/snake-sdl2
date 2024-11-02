@@ -1,6 +1,4 @@
 #include "snake.h"
-#include "include/SDL2/SDL_render.h"
-#include <SDL2/SDL_events.h>
 
 // Screen dimensions
 const int SCREEN_WIDTH = 800;
@@ -10,6 +8,7 @@ const int COLUMNS = 40;
 const int ROWS = 30;
 
 // Function prototypes
+void resetGame();
 void spawnFood();
 void printScore();
 void printText(char[], SDL_Rect);
@@ -46,6 +45,19 @@ int numModes = 3;
 int numOptions = 3;
 int selectedMode = 0;
 int selectedDiff = 0;
+
+void resetGame() {
+  for (int i = 0; i <= score; i++) {
+    snake[i].rect = (SDL_Rect) {0, 0, 0, 0};
+  }
+  quit = false;
+  score = 0;
+  startGame = false;
+  snake[0].color = (SDL_Color) {0, 255, 0, 255};
+  snake[0].rect = (SDL_Rect) {100, 100, GRID_SIZE, GRID_SIZE};
+  direction = (Vec2) {0, 0};
+  spawnFood();
+}
 
 void spawnFood() {
   food.rect = (SDL_Rect) {
@@ -260,9 +272,6 @@ void renderLose() {
         switch (e.key.keysym.sym) {
         case SDLK_RETURN:
           running = false;
-          quit = false;
-          score = 0;
-          startGame = false;
           break;
         case SDLK_ESCAPE:
           running = false;
@@ -272,6 +281,7 @@ void renderLose() {
       }
     }
   }
+  resetGame();
 }
 
 void closeSDL() {
