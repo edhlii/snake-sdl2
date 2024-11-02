@@ -1,4 +1,6 @@
 #include "snake.h"
+#include "include/SDL2/SDL_render.h"
+#include <SDL2/SDL_events.h>
 
 // Screen dimensions
 const int SCREEN_WIDTH = 800;
@@ -16,6 +18,7 @@ void updateSnake();
 bool init();
 void showMenu();
 void shopOptions();
+void renderLose();
 void closeSDL();
 void handleEvents();
 void update();
@@ -178,8 +181,6 @@ void showMenu() {
       modePos = (SDL_Rect) {320, 460, 160, 70};
     }
     SDL_RenderFillRect(renderer, &modePos);
-    // Render each mode (replace with SDL_ttf if using fonts)
-    // Use SDL_TTF to render text here as SDL doesn't directly support text rendering.
     SDL_Rect newGameRect = {320, 300, 160, 70};
     SDL_Rect optionRect = {320, 380, 160, 70};
     SDL_Rect quitGameRect = {320, 460, 160, 70};
@@ -231,8 +232,6 @@ void showOptions() {
       modePos = (SDL_Rect) {320, 460, 160, 70};
     }
     SDL_RenderFillRect(renderer, &modePos);
-    // Render each mode (replace with SDL_ttf if using fonts)
-    // Use SDL_TTF to render text here as SDL doesn't directly support text rendering.
     SDL_Rect easyRect = {320, 300, 160, 70};
     SDL_Rect normalRect = {320, 380, 160, 70};
     SDL_Rect hardRect = {320, 460, 160, 70};
@@ -245,14 +244,42 @@ void showOptions() {
   }
 }
 
+void renderLose() {
+  printText("You Lose!", (SDL_Rect) {100, 170, 200, 50});
+  printText("Press Enter to go to Menu!", (SDL_Rect) {100, 240, 500, 50});
+  SDL_RenderPresent(renderer);
+  bool running = true;
+  while (running) {
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+      if (e.type == SDL_QUIT) {
+        running = false;
+        return;
+      }
+      if (e.type == SDL_KEYDOWN) {
+        switch (e.key.keysym.sym) {
+        case SDLK_RETURN:
+          running = false;
+          quit = false;
+          score = 0;
+          startGame = false;
+          break;
+        case SDLK_ESCAPE:
+          running = false;
+          quit = true;
+          break;
+        }
+      }
+    }
+  }
+}
+
 void closeSDL() {
-  // Destroy renderer and window
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   window = NULL;
   renderer = NULL;
 
-  // Quit SDL
   SDL_Quit();
 }
 
@@ -291,7 +318,6 @@ void handleEvents() {
 }
 
 void update() {
-  // Update game logic
   updateSnake();
   if (isLose()) {
     quit = true;
@@ -320,8 +346,6 @@ void render() {
 
   printScore();
 
-  // SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-
   SDL_RenderPresent(renderer);
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
@@ -333,6 +357,7 @@ int main(int argc, char *args[]) {
   }
 
   // Game menu loop
+menu:
   while (!startGame && !quit) {
     showMenu();
     if (selectedMode == 2) quit = true;
@@ -345,11 +370,15 @@ int main(int argc, char *args[]) {
   else if (selectedDiff == 1) delay = 80000;
   else if (selectedDiff == 2) delay = 50000;
 
-  // Main game loop
+  // Main game loops
   while (!quit) {
     handleEvents();
     update();
     render();
+    if (isLose()) {
+      renderLose();
+      goto menu;
+    }
   }
 
   closeSDL();
