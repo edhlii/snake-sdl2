@@ -41,6 +41,7 @@ bool quit = false, startGame = false;
 int delay = 80000;
 
 // Menu variables
+SDL_Texture* banner_text;
 int numModes = 3;
 int numOptions = 3;
 int selectedMode = 0;
@@ -145,6 +146,7 @@ bool init() {
     return 1;
   }
 
+  banner_text = IMG_LoadTexture(renderer, "snakeart.png");
   snake[0].color = (SDL_Color) {0, 255, 0, 255};
   snake[0].rect = (SDL_Rect) {100, 100, GRID_SIZE, GRID_SIZE};
   direction = (Vec2) {0, 0};
@@ -192,6 +194,10 @@ void showMenu() {
     } else if (selectedMode == 2) {
       modePos = (SDL_Rect) {320, 460, 160, 70};
     }
+
+    SDL_Rect bannerRect = {60, 0, 700, 400};
+    SDL_RenderCopy(renderer, banner_text, NULL, &bannerRect);
+
     SDL_RenderFillRect(renderer, &modePos);
     SDL_Rect newGameRect = {320, 300, 160, 70};
     SDL_Rect optionRect = {320, 380, 160, 70};

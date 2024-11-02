@@ -7,8 +7,8 @@ CC_WINDOWS = x86_64-w64-mingw32-gcc
 
 # Compiler Flags
 CFLAGS = -Wall
-SDL_LIBS_LINUX = `sdl2-config --cflags --libs` -lSDL2_ttf
-SDL_LIBS_WINDOWS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
+SDL_LIBS_LINUX = `sdl2-config --cflags --libs` -lSDL2_ttf -lSDL2_image
+SDL_LIBS_WINDOWS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image
 
 # Default Target
 all: linux windows
