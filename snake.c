@@ -90,15 +90,19 @@ void updateSnake() {
   }
   snake[0].rect.x += direction.x * GRID_SIZE;
   snake[0].rect.y += direction.y * GRID_SIZE;
+  if (snake[0].rect.x >= 800) snake[0].rect.x = 0;
+  else if (snake[0].rect.x < 0) snake[0].rect.x = 800;
+  if (snake[0].rect.y >= 600) snake[0].rect.y = 0;
+  else if (snake[0].rect.y < 0) snake[0].rect.y = 600;
 }
 
 bool isLose() {
-  if (snake[0].rect.x >= SCREEN_WIDTH ||
-      snake[0].rect.x < 0   ||
-      snake[0].rect.y >= SCREEN_HEIGHT ||
-      snake[0].rect.y < 0) {
-    return true;
-  }
+  // if (snake[0].rect.x >= SCREEN_WIDTH ||
+  //     snake[0].rect.x < 0   ||
+  //     snake[0].rect.y >= SCREEN_HEIGHT ||
+  //     snake[0].rect.y < 0) {
+  //   return true;
+  // }
   for (int i = 1; i <= score; i++) {
     if (snake[0].rect.x == snake[i].rect.x && snake[0].rect.y == snake[i].rect.y) return true;
   }
