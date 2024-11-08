@@ -6,6 +6,7 @@ const int SCREEN_HEIGHT = 600;
 const int GRID_SIZE = 20;
 const int COLUMNS = 40;
 const int ROWS = 30;
+const Uint32 DIRECTION_DELAY = 100;
 
 // Function prototypes
 void resetGame();
@@ -39,6 +40,7 @@ TTF_Font* font;
 SDL_Color White = {255, 255, 255, 255};
 bool quit = false, startGame = false;
 int delay = 80000;
+Uint32 lastDirectionChangeTime = 0;
 
 // Menu variables
 SDL_Texture* banner_text;
@@ -58,6 +60,14 @@ void resetGame() {
   snake[0].rect = (SDL_Rect) {100, 100, GRID_SIZE, GRID_SIZE};
   direction = (Vec2) {0, 0};
   spawnFood();
+}
+
+bool checkFood() {
+  for (int i = 0; i <= score; i++) {
+    if (food.rect.x == snake[i].rect.x &&
+        food.rect.y == snake[i].rect.y) return false;
+  }
+  return true;
 }
 
 void spawnFood() {
@@ -96,13 +106,13 @@ void updateSnake() {
   else if (snake[0].rect.y < 0) snake[0].rect.y = 600;
 }
 
+// if (snake[0].rect.x >= SCREEN_WIDTH ||
+//     snake[0].rect.x < 0   ||
+//     snake[0].rect.y >= SCREEN_HEIGHT ||
+//     snake[0].rect.y < 0) {
+//   return true;
+// }
 bool isLose() {
-  // if (snake[0].rect.x >= SCREEN_WIDTH ||
-  //     snake[0].rect.x < 0   ||
-  //     snake[0].rect.y >= SCREEN_HEIGHT ||
-  //     snake[0].rect.y < 0) {
-  //   return true;
-  // }
   for (int i = 1; i <= score; i++) {
     if (snake[0].rect.x == snake[i].rect.x && snake[0].rect.y == snake[i].rect.y) return true;
   }
@@ -310,28 +320,35 @@ void handleEvents() {
       quit = true;
     }
     else if (event.type == SDL_KEYDOWN) {
-      switch (event.key.keysym.sym) {
-      case SDLK_w: case SDLK_UP:
-        if (direction.y != 0) break;
-        direction = (Vec2) {0, -1};
-        break;
-      case SDLK_s: case SDLK_DOWN:
-        if (direction.y != 0) break;
-        direction = (Vec2) {0, 1};
-        break;
-      case SDLK_a: case SDLK_LEFT:
-        if (direction.x != 0) break;
-        direction = (Vec2) { -1, 0};
-        break;
-      case SDLK_d: case SDLK_RIGHT:
-        if (direction.x != 0) break;
-        direction = (Vec2) {1, 0};
-        break;
-      case SDLK_ESCAPE:
-        quit = true;
-        break;
-      default:
-        break;
+      Uint32 currentTime = SDL_GetTicks();
+      if (currentTime - lastDirectionChangeTime >= DIRECTION_DELAY) {
+        switch (event.key.keysym.sym) {
+        case SDLK_w: case SDLK_UP:
+          if (direction.y != 0) break;
+          direction = (Vec2) {0, -1};
+          lastDirectionChangeTime = currentTime;
+          break;
+        case SDLK_s: case SDLK_DOWN:
+          if (direction.y != 0) break;
+          direction = (Vec2) {0, 1};
+          lastDirectionChangeTime = currentTime;
+          break;
+        case SDLK_a: case SDLK_LEFT:
+          if (direction.x != 0) break;
+          direction = (Vec2) { -1, 0};
+          lastDirectionChangeTime = currentTime;
+          break;
+        case SDLK_d: case SDLK_RIGHT:
+          if (direction.x != 0) break;
+          direction = (Vec2) {1, 0};
+          lastDirectionChangeTime = currentTime;
+          break;
+        case SDLK_ESCAPE:
+          quit = true;
+          break;
+        default:
+          break;
+        }
       }
     }
   }
@@ -344,6 +361,7 @@ void update() {
   }
   if (snake[0].rect.x == food.rect.x && snake[0].rect.y == food.rect.y) {
     spawnFood();
+    while(!checkFood()) spawnFood();
     score++;
   }
   usleep(delay);
