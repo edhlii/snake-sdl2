@@ -10,7 +10,7 @@ CFLAGS = -Wall
 SDL_LIBS_LINUX = `sdl2-config --cflags --libs` -lSDL2_ttf -lSDL2_image
 SDL_LIBS_WINDOWS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image
 INCLUDES = -I./libs/include
-LIBS = -L./libs/lib -lSDL2
+LIBS = -L./libs/lib
 
 # Default Target
 all: linux windows
