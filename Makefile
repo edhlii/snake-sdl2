@@ -1,7 +1,7 @@
 # Variables
 TARGET_LINUX = snake
 TARGET_WINDOWS = snake.exe
-SRC = snake.c  # Replace with your source file name
+SRC = snake.c
 CC_LINUX = gcc
 CC_WINDOWS = x86_64-w64-mingw32-gcc
 
